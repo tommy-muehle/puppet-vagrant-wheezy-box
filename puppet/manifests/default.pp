@@ -17,7 +17,7 @@ class { "apt::source::dotdeb":
   stage => "pre"
 }
 
-package {[ "vim", "php5-cli", "php5-cgi", "php5-xdebug"
+package {[ "vim", "mysql-server-5.5", "mysql-client-5.5", "php5-cli", "php5-cgi", "php5-xdebug"
 ]:
   ensure  => "installed",
 }
@@ -29,6 +29,7 @@ ohmyzsh::plugins { "root": plugins => "git composer colorize rsync" }
 ohmyzsh::plugins { "vagrant": plugins => "git composer colorize rsync" }
 
 class { "apache": }
+class { "apache::mod::rewrite": }
 class { "apache::mod::fcgid":
   options => {
     "AddHandler" => "fcgid-script .php",
@@ -37,10 +38,11 @@ class { "apache::mod::fcgid":
 
 apache::vhost { "tommy-muehle.dev":
   port => "80",
-  docroot => "/var/www/tommy-muehle_dev",
+  docroot => "/var/www/tommy-muehle_dev/web",
   directories => {
     path => "/var/www/tommy-muehle_dev",
     options => ["ExecCGI", "FollowSymLinks"],
+    allow_override => ["All"],
     fcgiwrapper => {
       command => "/usr/bin/php5-cgi",
     }

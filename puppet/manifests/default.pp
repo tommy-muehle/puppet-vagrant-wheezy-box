@@ -10,14 +10,14 @@ stage { "pre":
 class { "apt":
   stage => "pre",
   update => {
-    frequency => 'daily',
+    frequency => "daily",
   }
 }
 class { "apt::source::dotdeb":
   stage => "pre"
 }
 
-package {[ "vim", "mysql-server-5.5", "mysql-client-5.5", "php5-cli", "php5-cgi", "php5-xdebug"
+package {[ "vim", "php5-cli", "php5-cgi", "php5-xdebug"
 ]:
   ensure  => "installed",
 }
@@ -27,6 +27,17 @@ ohmyzsh::install { ["root", "vagrant"]: }
 ohmyzsh::theme { ["root", "vagrant"]: theme => "avit" }
 ohmyzsh::plugins { "root": plugins => "git composer colorize rsync" }
 ohmyzsh::plugins { "vagrant": plugins => "git composer colorize rsync" }
+
+class { "::mysql::server":
+  root_password => "start100",
+  remove_default_accounts => true
+}
+mysql::db { "tm":
+  user => "tm",
+  password => "start100",
+  host => "localhost",
+  grant => ["ALL"],
+}
 
 class { "apache": }
 class { "apache::mod::rewrite": }
